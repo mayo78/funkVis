@@ -141,10 +141,11 @@ class SpectralAnalyzer
         #end
     }
 
-	public function new(audioSource:AudioSource, barCount:Int, maxDelta:Float = 0.01, peakHold:Int = 30)
+	public function new(sound:FlxSound, barCount:Int, maxDelta:Float = 0.01, peakHold:Int = 30)
 	{
-        this.audioSource = audioSource;
-		this.audioClip = new LimeAudioClip(audioSource);
+		@:privateAccess
+        audioSource = sound._channel.__audioSource;
+		this.audioClip = new LimeAudioClip(audioSource, sound);
 		this.barCount = barCount;
         this.maxDelta = maxDelta;
         this.peakHold = peakHold;
@@ -194,15 +195,8 @@ class SpectralAnalyzer
         var numOctets = Std.int(audioSource.buffer.bitsPerSample / 8);
 		var wantedLength = fftN * numOctets * audioSource.buffer.channels;
 		var startFrame = audioClip.currentFrame;
-
-        if (startFrame < 0)
-        {
-            return levels = [for (bar in 0...barCount) {value: 0, peak: 0}];
-        }
-
         startFrame -= startFrame % numOctets;
-        var segment = audioSource.buffer.data.subarray(startFrame, min(startFrame + wantedLength, audioSource.buffer.data.length));
-
+		var segment = audioSource.buffer.data.subarray(startFrame, min(startFrame + wantedLength, audioSource.buffer.data.length));
 		var signal = getSignal(segment, audioSource.buffer.bitsPerSample);
 
 		if (audioSource.buffer.channels > 1) {

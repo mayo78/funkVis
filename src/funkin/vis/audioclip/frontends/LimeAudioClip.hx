@@ -4,24 +4,26 @@ import flixel.FlxG;
 import flixel.math.FlxMath;
 import funkin.vis.AudioBuffer;
 import lime.media.AudioSource;
+import flixel.sound.FlxSound;
 
 /**
  * Implementation of AudioClip for Lime.
  * On OpenFL you will want SoundChannel.__source (with @:privateAccess)
  * For Flixel, you will want to get the FlxSound._channel.__source
- *
+ * 
  * Note: On one of the recent OpenFL versions (9.3.2)
  * __source was renamed to __audioSource
  * https://github.com/openfl/openfl/commit/eec48a
- *
+ * 
  */
 class LimeAudioClip implements funkin.vis.AudioClip
 {
 	public var audioBuffer(default, null):AudioBuffer;
-    public var currentFrame(get, never):Int;
+	public var currentFrame(get, never):Int;
 	public var source:Dynamic;
+	public var sound:FlxSound;
 
-	public function new(audioSource:AudioSource)
+	public function new(audioSource:AudioSource, sound:FlxSound)
 	{
 		var data:lime.utils.UInt16Array = cast audioSource.buffer.data;
 
@@ -33,6 +35,7 @@ class LimeAudioClip implements funkin.vis.AudioClip
 
 		this.audioBuffer = new AudioBuffer(data, sampleRate);
 		this.source = audioSource.buffer.src;
+		this.sound = sound;
 	}
 
 	private function get_currentFrame():Int
@@ -45,11 +48,6 @@ class LimeAudioClip implements funkin.vis.AudioClip
 		dataLength = audioBuffer.data.length;
 		#end
 
-		var value = Std.int(FlxMath.remapToRange(FlxG.sound.music.time, 0, FlxG.sound.music.length, 0, dataLength));
-
-		if (value < 0)
-			return -1;
-
-		return value;
+		return Std.int(FlxMath.remapToRange(sound.time, 0, sound.length, 0, dataLength));
 	}
 }
