@@ -7,6 +7,7 @@ import funkin.vis.audioclip.frontends.LimeAudioClip;
 import grig.audio.FFT;
 import grig.audio.FFTVisualization;
 import lime.media.AudioSource;
+import flixel.sound.FlxSound;
 
 using grig.audio.lime.UInt8ArrayTools;
 
